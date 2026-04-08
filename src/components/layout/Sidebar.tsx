@@ -28,7 +28,7 @@ export default function Sidebar() {
   return (
     <nav className="sidebar">
       <div className="sidebar-logo">
-        <Image src="/logo.svg" alt="Channel Talk" width={36} height={36} />
+        <Image src="/logo.png" alt="Channel Talk" width={36} height={36} />
         <div>
           <div className="sidebar-logo-text">ALF設計<br />アシスタント</div>
           <div className="sidebar-logo-sub">Channel Talk</div>
