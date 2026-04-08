@@ -1,25 +1,31 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { auth } from "@/lib/auth";
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const isOnLoginPage = req.nextUrl.pathname === "/";
-  const isAuthRoute = req.nextUrl.pathname.startsWith("/api/auth");
+function isPublicPath(pathname: string): boolean {
+  return (
+    pathname === "/" ||
+    pathname.startsWith("/api/auth")
+  );
+}
 
-  if (isAuthRoute) {
+export default async function middleware(req: NextRequest) {
+  // Public paths are always accessible
+  if (isPublicPath(req.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
-  if (!isLoggedIn && !isOnLoginPage) {
+  try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+    return NextResponse.next();
+  } catch {
+    // If auth() fails (e.g. missing env vars), block access
     return NextResponse.redirect(new URL("/", req.url));
   }
-
-  if (isLoggedIn && isOnLoginPage) {
-    return NextResponse.redirect(new URL("/steps/input", req.url));
-  }
-
-  return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
