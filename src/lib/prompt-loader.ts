@@ -54,7 +54,7 @@ function loadTemplates(sel: SystemSelection): string {
     nextengine: "templates/nextengine-engine.md",
   };
 
-  const selected = [sel.cart, sel.wms, sel.oms].filter(
+  const selected = ([sel.cart, sel.wms, sel.oms] as string[]).filter(
     (v) => v && v !== "other" && v !== ""
   ) as string[];
 
