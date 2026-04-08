@@ -1,0 +1,511 @@
+{
+  "type": "object",
+  "properties": {
+    "task": {
+      "type": "object",
+      "required": ["name", "trigger", "memorySchema", "nodes", "startNodeId"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Task 名（1〜50文字）"
+        },
+        "icon": {
+          "type": "string",
+          "description": "アイコン URL または識別子（オプション）"
+        },
+        "trigger": {
+          "type": "string",
+          "description": "Task 開始トリガーの自然言語説明（1〜5000文字）"
+        },
+        "filter": {
+          "type": "object",
+          "description": "Task グローバルフィルター条件（オプション）。Expression 構造: and/or 配列でネスト。各条件は key(変数名), type(データタイプ), operator(演算子), values(配列フィールドを含む",
+          "properties": {
+            "and": {
+              "type": "array",
+              "description": "AND 条件配列。すべての条件が真である必要がある",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "or": {
+                    "type": "array",
+                    "description": "OR 条件配列。1つ以上が真であればよい",
+                    "items": {
+                      "type": "object",
+                      "required": ["key", "type", "operator", "values"],
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "description": "評価する変数キー（e.g., 'user.member', 'taskMemory.selectedMenu'）"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["string", "number", "boolean", "list"],
+                          "description": "データタイプ"
+                        },
+                        "operator": {
+                          "type": "string",
+                          "enum": [
+                            "$eq",
+                            "$ne",
+                            "$in",
+                            "$nin",
+                            "$exist",
+                            "$nexist",
+                            "$startWith",
+                            "$nStartWith",
+                            "$regex"
+                          ],
+                          "description": "比較演算子。$eq(等しい), $ne(異なる), $in(配列に含む), $nin(配列に含まない), $exist(存在する), $nexist(存在しない), $startWith(開始), $nStartWith(開始しない), $regex(正規表現)"
+                        },
+                        "values": {
+                          "type": "array",
+                          "description": "比較する値の配列",
+                          "items": {
+                            "oneOf": [
+                              { "type": "string" },
+                              { "type": "number" },
+                              { "type": "boolean" }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "targetMediums": {
+          "type": "array",
+          "description": "対象メディアムリスト（オプション）",
+          "items": {
+            "type": "object",
+            "properties": {
+              "mediumType": {
+                "type": "string",
+                "description": "メディアムタイプ（e.g., 'native'）"
+              }
+            }
+          }
+        },
+        "memorySchema": {
+          "type": "array",
+          "description": "Task で使用する変数定義（最大50個）",
+          "items": {
+            "type": "object",
+            "required": ["key", "type"],
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "変数固有キー"
+              },
+              "type": {
+                "type": "string",
+                "description": "データタイプ (string, number, boolean, list, listOfNumber)"
+              },
+              "description": {
+                "type": "string",
+                "description": "変数説明（オプション）"
+              }
+            }
+          }
+        },
+        "nodes": {
+          "type": "array",
+          "description": "フローのすべてのノード（最大100個）",
+          "items": {
+            "type": "object",
+            "required": ["id", "key", "type", "name", "next"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ノード固有識別子（UUID 推奨）"
+              },
+              "key": {
+                "type": "string",
+                "description": "人が読める固有キー（e.g., 'A', 'B'）"
+              },
+              "type": {
+                "type": "string",
+                "description": "ノードタイプ（agent, message, userChatInlineAction, code）"
+              },
+              "name": {
+                "type": "string",
+                "description": "ノード表示名"
+              },
+              "next": {
+                "type": "object",
+                "description": "次のノードへの遷移定義。typeが'goto'ならtoフィールド必須。typeが'branch'ならconditionsとdefaultフィールド必須。typeが'button'ならbuttonsフィールド必須",
+                "required": ["type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "遷移タイプ（goto, branch, button）"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "gotoタイプ: 対象ノードID（END_TASKに設定時は終了）"
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "description": "branchタイプ: 条件配列（優先順位順に評価）",
+                    "items": {
+                      "type": "object",
+                      "required": ["filter", "to"],
+                      "properties": {
+                        "filter": {
+                          "type": "object",
+                          "description": "評価するフィルター式。Expression構造: and/or配列でネスト。各条件はkey, type, operator, valuesフィールドを含む",
+                          "required": ["and"],
+                          "properties": {
+                            "and": {
+                              "type": "array",
+                              "description": "AND条件配列",
+                              "items": {
+                                "type": "object",
+                                "required": ["or"],
+                                "properties": {
+                                  "or": {
+                                    "type": "array",
+                                    "description": "OR条件配列",
+                                    "items": {
+                                      "type": "object",
+                                      "required": [
+                                        "key",
+                                        "type",
+                                        "operator",
+                                        "values"
+                                      ],
+                                      "properties": {
+                                        "key": {
+                                          "type": "string",
+                                          "description": "評価する変数キー（e.g., 'taskMemory.selectedMenu', 'taskMemory.orderStatus'）"
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "string",
+                                            "number",
+                                            "boolean",
+                                            "list"
+                                          ],
+                                          "description": "データタイプ"
+                                        },
+                                        "operator": {
+                                          "type": "string",
+                                          "enum": [
+                                            "$eq",
+                                            "$ne",
+                                            "$in",
+                                            "$nin",
+                                            "$exist",
+                                            "$nexist",
+                                            "$startWith",
+                                            "$nStartWith",
+                                            "$regex"
+                                          ],
+                                          "description": "比較演算子。$eq(等しい), $ne(異なる), $in(配列に含む), $nin(配列に含まない), $exist(存在する), $nexist(存在しない), $startWith(開始), $nStartWith(開始しない), $regex(正規表現)"
+                                        },
+                                        "values": {
+                                          "type": "array",
+                                          "description": "比較する値の配列. $existの場合['true']または['false']",
+                                          "items": {
+                                            "oneOf": [
+                                              { "type": "string" },
+                                              { "type": "number" },
+                                              { "type": "boolean" }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "to": {
+                          "type": "string",
+                          "description": "条件が真のとき移動するノードID"
+                        },
+                        "$index": {
+                          "type": "string",
+                          "description": "エディタ用条件固有ID（UUID、オプションだが推奨）"
+                        }
+                      }
+                    }
+                  },
+                  "default": {
+                    "type": "string",
+                    "description": "branchタイプ: すべての条件が偽のとき移動するデフォルトノードID"
+                  },
+                  "buttons": {
+                    "type": "array",
+                    "description": "buttonタイプ: ボタン配列",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ボタンID"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "ボタン表示名"
+                        },
+                        "to": {
+                          "type": "string",
+                          "description": "ボタンクリック時に移動するノードID"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "instruction": {
+                "type": "string",
+                "description": "Agentノードのシステムプロンプト/指示文。<promptdata>タグでメモリバインディング可能"
+              },
+              "message": {
+                "type": "object",
+                "description": "Messageノードのメッセージ内容",
+                "properties": {
+                  "blocks": {
+                    "type": "array",
+                    "description": "メッセージブロック配列",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "ブロックタイプ（text, bullets, image等）"
+                        },
+                        "value": {
+                          "description": "ブロック値（文字列または文字列配列）"
+                        },
+                        "blocks": {
+                          "type": "array",
+                          "description": "ネストされたブロック（bullets内部等）",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "buttons": {
+                    "type": "array",
+                    "description": "ボタン配列（オプション）",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "form": {
+                    "type": "object",
+                    "description": "フォームオブジェクト（オプション）"
+                  },
+                  "webPage": {
+                    "type": "object",
+                    "description": "ウェブページオブジェクト（オプション）"
+                  },
+                  "files": {
+                    "type": "array",
+                    "description": "ファイル配列",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "ファイルID"
+                        },
+                        "key": {
+                          "type": "string",
+                          "description": "ファイルキー（ストレージパス）"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "ファイル名"
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "ファイルタイプ（image, video等）"
+                        },
+                        "contentType": {
+                          "type": "string",
+                          "description": "MIMEタイプ"
+                        },
+                        "bucket": {
+                          "type": "string",
+                          "description": "ストレージバケット"
+                        },
+                        "size": {
+                          "type": "number",
+                          "description": "ファイルサイズ（bytes）"
+                        },
+                        "width": {
+                          "type": "number",
+                          "description": "画像幅（画像の場合）"
+                        },
+                        "height": {
+                          "type": "number",
+                          "description": "画像高さ（画像の場合）"
+                        },
+                        "animated": {
+                          "type": "boolean",
+                          "description": "アニメーション有無（画像の場合）"
+                        },
+                        "previewKey": {
+                          "type": "string",
+                          "description": "プレビューキー（オプション）"
+                        }
+                      }
+                    }
+                  },
+                  "customPayload": {
+                    "type": "object",
+                    "description": "カスタムペイロード（オプション）"
+                  }
+                }
+              },
+              "actions": {
+                "type": "array",
+                "description": "UserChatInlineActionノードのアクション配列",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "description": "アクションタイプ（addUserChatTags, removeUserChatTags, assignManager）"
+                    },
+                    "tags": {
+                      "type": "array",
+                      "description": "タグ配列（addUserChatTags, removeUserChatTagsタイプ用）",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "managerId": {
+                      "type": "string",
+                      "description": "担当者ID（assignManagerタイプ用）"
+                    }
+                  }
+                }
+              },
+              "code": {
+                "type": "string",
+                "description": "Codeノードの実行するJavaScript/TypeScriptコード"
+              },
+              "onError": {
+                "type": "object",
+                "description": "エラーハンドラー（codeノード専用）。コードでエラーをthrowすると指定されたノードにルーティングされる",
+                "required": ["type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["goto"],
+                    "description": "遷移タイプ（現在gotoのみサポート）"
+                  },
+                  "to": {
+                    "type": "string",
+                    "description": "エラー発生時に移動するノードID（またはEND_TASK）"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "startNodeId": {
+          "type": "string",
+          "description": "エントリーポイントノードのID"
+        }
+      }
+    },
+    "taskEditorPosition": {
+      "type": "object",
+      "description": "ビジュアルエディタ用レイアウト情報. TRIGGERノードとすべてのtask.nodesの位置をnodePositionsに含める必要があり、すべてのノード間接続をedgePositionsに含める必要があります",
+      "required": ["nodePositions", "edgePositions"],
+      "properties": {
+        "nodePositions": {
+          "type": "array",
+          "description": "ノード位置配列。TRIGGERノードから始まり、すべてのtask.nodesのIDと位置を含む。ノードは左→右、上→下方向に配置 (x: 0から400ずつ増加、y: 0から開始し、分岐時は400ずつ増加)",
+          "items": {
+            "type": "object",
+            "required": ["id", "position"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "ノードID（'TRIGGER'またはtask.nodesのid）"
+              },
+              "position": {
+                "type": "object",
+                "required": ["x", "y"],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "X座標（左から右へ0, 400, 800, 1200...）"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "Y座標（上から下へ0, 400, 800...）"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "edgePositions": {
+          "type": "array",
+          "description": "エッジ（接続線）配列。すべてのノード遷移(next)を表現。TRIGGER→最初のノード接続を含む。gotoは1つのエッジ、branchは条件数分のエッジを生成 (各条件ごとにindexが異なる), buttonはボタン数分のエッジを生成",
+          "items": {
+            "type": "object",
+            "required": ["sourceNode", "targetNode"],
+            "properties": {
+              "sourceNode": {
+                "type": "object",
+                "description": "出発ノード情報",
+                "required": ["id", "offset", "type", "index"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "出発ノードID（'TRIGGER'またはtask.nodesのid）"
+                  },
+                  "offset": {
+                    "type": "number",
+                    "description": "オフセット（通常0）"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "遷移タイプ（goto, branch, button, onError）"
+                  },
+                  "index": {
+                    "type": "integer",
+                    "description": "branch/buttonの場合は条件/ボタンインデックス（0から開始）、goto/onErrorは0"
+                  }
+                }
+              },
+              "targetNode": {
+                "type": "object",
+                "description": "到着ノード情報",
+                "required": ["id", "offset"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "到着ノードID（task.nodesのidまたは'END_TASK'）"
+                  },
+                  "offset": {
+                    "type": "number",
+                    "description": "オフセット（通常0）"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["task"]
+}
