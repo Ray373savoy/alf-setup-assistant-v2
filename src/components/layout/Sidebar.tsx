@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "@/lib/store";
@@ -21,9 +22,7 @@ export default function Sidebar() {
     <nav className="sidebar">
       <div className="sidebar-logo">
         {/* ロゴファイルを /public/logo.png に置いてください */}
-        <img src="/logo.png" alt="Channel Talk" onError={(e) => {
-          (e.target as HTMLImageElement).style.display = "none";
-        }} />
+        <Image src="/logo.png" alt="Channel Talk" width={36} height={36} />
         <div>
           <div className="sidebar-logo-text">ALF設計<br />アシスタント</div>
           <div className="sidebar-logo-sub">Channel Talk</div>
