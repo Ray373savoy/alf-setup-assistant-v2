@@ -36,7 +36,7 @@ export default function DownloadPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${(taskName || taskJson.task.name).replace(/\s+/g, "_") || "alf_task"}.json`;
+    a.download = `${(taskName || taskJson!.task.name).replace(/\s+/g, "_") || "alf_task"}.json`;
     a.click();
     URL.revokeObjectURL(url);
     setDownloaded(true);
