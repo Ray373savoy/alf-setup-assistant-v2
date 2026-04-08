@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -27,7 +28,7 @@ export default function Sidebar() {
   return (
     <nav className="sidebar">
       <div className="sidebar-logo">
-        <span className="sidebar-logo-icon">ALF</span>
+        <Image src="/logo.svg" alt="Channel Talk" width={36} height={36} />
         <div>
           <div className="sidebar-logo-text">ALF設計<br />アシスタント</div>
           <div className="sidebar-logo-sub">Channel Talk</div>
