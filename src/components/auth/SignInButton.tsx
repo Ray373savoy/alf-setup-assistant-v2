@@ -1,8 +1,11 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useT } from "@/lib/i18n";
 
 export default function SignInButton() {
+  const t = useT();
+
   return (
     <button className="btn-google" onClick={() => signIn("google")}>
       <svg width="18" height="18" viewBox="0 0 18 18">
@@ -23,7 +26,7 @@ export default function SignInButton() {
           fill="#EA4335"
         />
       </svg>
-      Google でログイン
+      {t.login.googleButton}
     </button>
   );
 }

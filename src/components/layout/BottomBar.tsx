@@ -1,10 +1,12 @@
 "use client";
 
+import { useT } from "@/lib/i18n";
+
 interface BottomBarProps {
   currentStep: number;
   totalSteps?: number;
   onNext: () => void;
-  nextLabel?: string;
+  nextLabel: string;
   nextDisabled?: boolean;
   onBack?: () => void;
   loading?: boolean;
@@ -14,11 +16,13 @@ export default function BottomBar({
   currentStep,
   totalSteps = 6,
   onNext,
-  nextLabel = "次へ進む",
+  nextLabel,
   nextDisabled = false,
   onBack,
   loading = false,
 }: BottomBarProps) {
+  const t = useT();
+
   return (
     <div className="bottom-bar">
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -44,7 +48,7 @@ export default function BottomBar({
       <div style={{ display: "flex", gap: 8 }}>
         {onBack && (
           <button className="btn btn-secondary" onClick={onBack}>
-            ← 戻る
+            {t.common.back}
           </button>
         )}
         <button
@@ -55,7 +59,7 @@ export default function BottomBar({
           {loading ? (
             <>
               <span className="spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
-              処理中...
+              {t.common.processing}
             </>
           ) : (
             <>

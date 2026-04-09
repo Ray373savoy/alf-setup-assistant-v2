@@ -5,20 +5,30 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "@/lib/store";
+import { useT, useI18nStore, type Locale } from "@/lib/i18n";
 
-const STEPS = [
-  { num: 1, label: "入力", path: "/steps/input" },
-  { num: 2, label: "AI分析・要件補完", path: "/steps/analysis" },
-  { num: 3, label: "フロー可視化", path: "/steps/flow" },
-  { num: 4, label: "検証", path: "/steps/validation" },
-  { num: 5, label: "タスクエディタ", path: "/steps/editor" },
-  { num: 6, label: "ダウンロード", path: "/steps/download" },
+const STEP_PATHS = [
+  "/steps/input",
+  "/steps/analysis",
+  "/steps/flow",
+  "/steps/validation",
+  "/steps/editor",
+  "/steps/download",
+];
+
+const LOCALES: { value: Locale; label: string }[] = [
+  { value: "ja", label: "JP" },
+  { value: "ko", label: "KR" },
+  { value: "en", label: "EN" },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const completedSteps = useAppStore((s) => s.completedSteps);
   const [toast, setToast] = useState<string | null>(null);
+  const t = useT();
+  const locale = useI18nStore((s) => s.locale);
+  const setLocale = useI18nStore((s) => s.setLocale);
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
@@ -27,22 +37,37 @@ export default function Sidebar() {
 
   return (
     <nav className="sidebar">
+      <div className="lang-selector">
+        {LOCALES.map((l) => (
+          <button
+            key={l.value}
+            className={`lang-btn ${locale === l.value ? "active" : ""}`}
+            onClick={() => setLocale(l.value)}
+          >
+            {l.label}
+          </button>
+        ))}
+      </div>
+
       <div className="sidebar-logo">
         <Image src="/logo.svg" alt="Channel Talk" width={36} height={36} />
         <div>
-          <div className="sidebar-logo-text">ALF設計<br />アシスタント</div>
-          <div className="sidebar-logo-sub">Channel Talk</div>
+          <div className="sidebar-logo-text">
+            {t.sidebar.title.split("\n").map((line, i) => (
+              <span key={i}>{line}{i === 0 && <br />}</span>
+            ))}
+          </div>
+          <div className="sidebar-logo-sub">{t.sidebar.subtitle}</div>
         </div>
       </div>
 
       <div className="sidebar-nav">
-        {STEPS.map((step) => {
-          const isActive = pathname === step.path;
-          const isCompleted = completedSteps.has(step.num);
+        {STEP_PATHS.map((path, i) => {
+          const num = i + 1;
+          const isActive = pathname === path;
+          const isCompleted = completedSteps.has(num);
           const isAccessible =
-            step.num === 1 ||
-            isCompleted ||
-            completedSteps.has(step.num - 1);
+            num === 1 || isCompleted || completedSteps.has(num - 1);
 
           const className = [
             "nav-item",
@@ -56,24 +81,22 @@ export default function Sidebar() {
           if (!isAccessible) {
             return (
               <div
-                key={step.num}
+                key={num}
                 className={className}
-                onClick={() =>
-                  showToast("Step 1 の情報を入力してください")
-                }
+                onClick={() => showToast(t.sidebar.stepIncomplete)}
               >
-                <span className="nav-num">{step.num}</span>
-                <span className="nav-label">{step.label}</span>
+                <span className="nav-num">{num}</span>
+                <span className="nav-label">{t.sidebar.steps[i]}</span>
               </div>
             );
           }
 
           return (
-            <Link key={step.num} href={step.path} className={className}>
+            <Link key={num} href={path} className={className}>
               <span className="nav-num">
-                {isCompleted && !isActive ? "✓" : step.num}
+                {isCompleted && !isActive ? "✓" : num}
               </span>
-              <span className="nav-label">{step.label}</span>
+              <span className="nav-label">{t.sidebar.steps[i]}</span>
             </Link>
           );
         })}

@@ -3,10 +3,12 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 import type { ChatMessage } from "@/lib/types";
 
 export default function EditorPage() {
   const router = useRouter();
+  const t = useT();
   const {
     taskJson, setTaskJson,
     systemSelection,
@@ -44,7 +46,7 @@ export default function EditorPage() {
     } catch (e) {
       addEditorChatMessage({
         role: "assistant",
-        content: `修正に失敗しました: ${e instanceof Error ? e.message : "不明なエラー"}`,
+        content: `${t.editor.modifyFail}${e instanceof Error ? e.message : t.editor.unknownError}`,
         timestamp: Date.now(),
       });
     } finally {
@@ -56,11 +58,11 @@ export default function EditorPage() {
   if (!taskJson) {
     return (
       <div className="page-body">
-        <div className="page-header"><h2>タスクエディタ</h2></div>
+        <div className="page-header"><h2>{t.editor.heading}</h2></div>
         <div className="card">
-          <p style={{ color: "var(--text-secondary)" }}>Task JSONがありません。Step 3から始めてください。</p>
+          <p style={{ color: "var(--text-secondary)" }}>{t.editor.noJson}</p>
           <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => router.push("/steps/flow")}>
-            ← フロー可視化へ
+            {t.editor.goToFlow}
           </button>
         </div>
       </div>
@@ -76,10 +78,10 @@ export default function EditorPage() {
         padding: "9px 20px", display: "flex", alignItems: "center", justifyContent: "space-between",
         flexShrink: 0,
       }}>
-        <div style={{ fontSize: 13, fontWeight: 600 }}>Step 5 — タスクエディタ</div>
+        <div style={{ fontSize: 13, fontWeight: 600 }}>{t.editor.stepHeading}</div>
         <div style={{ display: "flex", gap: 7 }}>
           <button className="btn btn-secondary" style={{ fontSize: 11, padding: "5px 12px" }}
-            onClick={() => router.push("/steps/validation")}>← 検証へ戻る</button>
+            onClick={() => router.push("/steps/validation")}>{t.editor.goToValidation}</button>
         </div>
       </div>
 
@@ -92,7 +94,7 @@ export default function EditorPage() {
               paddingBottom: 8, marginBottom: 8, fontSize: 11,
               color: "var(--text-muted)", borderBottom: "1px solid var(--border)",
             }}>
-              {nodes.length}ノード — React Flow ビジュアルエディタは開発中です。現在はノード一覧で確認できます。
+              {nodes.length}{t.editor.nodeListNote}
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -142,7 +144,7 @@ export default function EditorPage() {
         {/* Right: Chat */}
         <div style={{ flex: 4, display: "flex", flexDirection: "column", background: "var(--card-bg)" }}>
           <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--border)", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>
-            自然言語で修正
+            {t.editor.chatTitle}
           </div>
 
           <div style={{ flex: 1, overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -152,7 +154,7 @@ export default function EditorPage() {
                 background: "var(--bg)", borderRadius: 8, padding: "10px 12px",
                 borderLeft: "2px solid #6c5ce7",
               }}>
-                修正したいことを自然言語で入力してください。例: 「Aノードのinstructionに再試行処理を追加」
+                {t.editor.chatDescription}
               </div>
             )}
             {editorChatHistory.map((msg, i) => (
@@ -168,7 +170,7 @@ export default function EditorPage() {
             ))}
             {sending && (
               <div style={{ fontSize: 12, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6 }}>
-                <span className="spinner" style={{ width: 12, height: 12 }} /> Task JSON修正中...
+                <span className="spinner" style={{ width: 12, height: 12 }} /> {t.editor.modifying}
               </div>
             )}
             <div ref={chatEndRef} />
@@ -179,7 +181,7 @@ export default function EditorPage() {
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              placeholder="修正内容を入力... (Shift+Enterで改行)"
+              placeholder={t.editor.chatPlaceholder}
               style={{
                 flex: 1, fontSize: 12, padding: "7px 10px", border: "1px solid var(--border)",
                 borderRadius: 6, background: "var(--bg)", resize: "none", height: 34,
@@ -203,12 +205,12 @@ export default function EditorPage() {
               <div key={n} className={`step-dot ${n === 5 ? "active" : n < 5 ? "done" : ""}`} />
             ))}
           </div>
-          <span className="step-label">Step 5 / 6</span>
+          <span className="step-label">{t.editor.stepLabel}</span>
         </div>
         <button className="btn btn-primary" onClick={() => {
           completeStep(5); setCurrentStep(6); router.push("/steps/download");
         }}>
-          ダウンロードへ進む
+          {t.editor.nextButton}
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M4 8h8M9 5l3 3-3 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
