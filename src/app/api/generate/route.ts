@@ -41,17 +41,24 @@ ${feedbackSection}
 有効なTask JSONのみ出力してください。説明文やマークダウンは含めないこと。
 `;
 
-    const response = await client.messages.create({
+    let text = "";
+    let stopReason: string | null = null;
+
+    const stream = client.messages.stream({
       model: "claude-sonnet-4-6",
       max_tokens: 32000,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
 
-    const text = response.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("");
+    for await (const event of stream) {
+      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+        text += event.delta.text;
+      }
+      if (event.type === "message_stop") {
+        stopReason = (await stream.finalMessage()).stop_reason;
+      }
+    }
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
@@ -62,8 +69,7 @@ ${feedbackSection}
     try {
       taskJson = JSON.parse(jsonMatch[0]);
     } catch {
-      // Truncated response — notify user
-      const isTruncated = response.stop_reason === "max_tokens";
+      const isTruncated = stopReason === "max_tokens";
       const detail = isTruncated
         ? "生成されたJSONが長すぎて途中で切れました。入力テキストを短くするか、要件を絞って再試行してください。"
         : "AIレスポンスのJSON解析に失敗しました。再生成をお試しください。";

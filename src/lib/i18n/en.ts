@@ -58,8 +58,9 @@ export const en: Translations = {
     requiredCount: "questions / optional",
     answerPlaceholder: "Enter your answer",
     optionalPlaceholder: "Can be skipped",
-    needsConfirmation: "TBC",
-    needsConfirmationMarker: "[TBC]",
+    needsConfirmation: "Confirm later",
+    needsConfirmationMarker: "[Confirm later]",
+    confirmLaterHint: "If you're unsure about a required item, select 'Confirm later' to proceed.",
     nextButton: "Submit & Generate Flow",
   },
 

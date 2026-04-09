@@ -58,8 +58,9 @@ export const ko: Translations = {
     requiredCount: "문항 / 선택",
     answerPlaceholder: "답변을 입력해 주세요",
     optionalPlaceholder: "생략 가능합니다",
-    needsConfirmation: "확인 필요",
-    needsConfirmationMarker: "【확인 필요】",
+    needsConfirmation: "나중에 확인",
+    needsConfirmationMarker: "【나중에 확인】",
+    confirmLaterHint: "필수 항목의 답변을 모르는 경우 '나중에 확인'을 선택하여 다음으로 진행할 수 있습니다.",
     nextButton: "답변하고 플로우 생성",
   },
 

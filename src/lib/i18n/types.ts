@@ -65,6 +65,7 @@ export interface Translations {
     optionalPlaceholder: string;
     needsConfirmation: string;
     needsConfirmationMarker: string;
+    confirmLaterHint: string;
     nextButton: string;
   };
 

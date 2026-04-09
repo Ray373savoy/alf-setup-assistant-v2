@@ -41,7 +41,10 @@ ${feedback}
 
 変更点のみ修正した完全なTask JSONを出力してください。説明文は不要です。JSONのみ出力。`;
 
-    const response = await client.messages.create({
+    let text = "";
+    let stopReason: string | null = null;
+
+    const stream = client.messages.stream({
       model: "claude-sonnet-4-6",
       max_tokens: 32000,
       system: systemPrompt,
@@ -51,10 +54,14 @@ ${feedback}
       ],
     });
 
-    const text = response.content
-      .filter((b): b is Anthropic.TextBlock => b.type === "text")
-      .map((b) => b.text)
-      .join("");
+    for await (const event of stream) {
+      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+        text += event.delta.text;
+      }
+      if (event.type === "message_stop") {
+        stopReason = (await stream.finalMessage()).stop_reason;
+      }
+    }
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
@@ -68,7 +75,7 @@ ${feedback}
     try {
       updatedTaskJson = JSON.parse(jsonMatch[0]);
     } catch {
-      const isTruncated = response.stop_reason === "max_tokens";
+      const isTruncated = stopReason === "max_tokens";
       const detail = isTruncated
         ? "修正後のJSONが長すぎて途中で切れました。再試行してください。"
         : "修正後のJSON解析に失敗しました。再試行してください。";
