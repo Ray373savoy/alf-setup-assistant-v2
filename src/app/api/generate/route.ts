@@ -41,7 +41,7 @@ ${feedbackSection}
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 8000,
+      max_tokens: 16000,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
@@ -56,7 +56,17 @@ ${feedbackSection}
       return NextResponse.json({ error: "Task JSON could not be parsed" }, { status: 500 });
     }
 
-    const taskJson: TaskJson = JSON.parse(jsonMatch[0]);
+    let taskJson: TaskJson;
+    try {
+      taskJson = JSON.parse(jsonMatch[0]);
+    } catch {
+      // Truncated response — notify user
+      const isTruncated = response.stop_reason === "max_tokens";
+      const detail = isTruncated
+        ? "生成されたJSONが長すぎて途中で切れました。入力テキストを短くするか、要件を絞って再試行してください。"
+        : "AIレスポンスのJSON解析に失敗しました。再生成をお試しください。";
+      return NextResponse.json({ error: detail }, { status: 500 });
+    }
 
     // Mermaid コードを生成
     const mermaidCode = generateMermaid(taskJson);
