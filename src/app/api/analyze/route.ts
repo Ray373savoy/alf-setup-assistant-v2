@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildAnalysisPrompt } from "@/lib/prompt-loader";
+import { callWithRetry, friendlyMessage } from "@/lib/api-retry";
 import type { SystemSelection, AnalysisResult } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -47,12 +48,14 @@ ${inputText}
 JSONのみ出力し、それ以外のテキストは含めないこと。
 `;
 
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2000,
-      system: systemPrompt || "あなたはChannel Talk ALF Task設計アシスタントです。",
-      messages: [{ role: "user", content: userPrompt }],
-    });
+    const response = await callWithRetry(() =>
+      client.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 2000,
+        system: systemPrompt || "あなたはChannel Talk ALF Task設計アシスタントです。",
+        messages: [{ role: "user", content: userPrompt }],
+      })
+    );
 
     const text = response.content
       .filter((b): b is Anthropic.TextBlock => b.type === "text")
@@ -67,7 +70,6 @@ JSONのみ出力し、それ以外のテキストは含めないこと。
     const result: AnalysisResult = JSON.parse(jsonMatch[0]);
     return NextResponse.json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: friendlyMessage(error) }, { status: 500 });
   }
 }
