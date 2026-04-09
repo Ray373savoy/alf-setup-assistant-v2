@@ -68,10 +68,19 @@ body {
   gap: 10px;
 }
 
-.sidebar-logo img {
+.sidebar-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
-  object-fit: contain;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .sidebar-logo-text {
@@ -116,7 +125,7 @@ body {
 
 .nav-item.disabled {
   opacity: 0.4;
-  pointer-events: none;
+  cursor: pointer;
 }
 
 .nav-num {
@@ -436,4 +445,33 @@ body {
 .btn-google:hover {
   background: #f9fafb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Toast ───────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text-primary);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: toast-in 0.25s ease-out;
+  white-space: nowrap;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }

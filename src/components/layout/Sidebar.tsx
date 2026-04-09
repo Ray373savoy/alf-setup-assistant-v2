@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 
@@ -17,12 +18,17 @@ const STEPS = [
 export default function Sidebar() {
   const pathname = usePathname();
   const completedSteps = useAppStore((s) => s.completedSteps);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  }, []);
 
   return (
     <nav className="sidebar">
       <div className="sidebar-logo">
-        {/* ロゴファイルを /public/logo.png に置いてください */}
-        <Image src="/logo.png" alt="Channel Talk" width={36} height={36} />
+        <Image src="/logo.svg" alt="Channel Talk" width={36} height={36} />
         <div>
           <div className="sidebar-logo-text">ALF設計<br />アシスタント</div>
           <div className="sidebar-logo-sub">Channel Talk</div>
@@ -33,23 +39,29 @@ export default function Sidebar() {
         {STEPS.map((step) => {
           const isActive = pathname === step.path;
           const isCompleted = completedSteps.has(step.num);
-          const isDisabled =
-            !isActive &&
-            !isCompleted &&
-            step.num > Math.max(1, ...Array.from(completedSteps)) + 1;
+          const isAccessible =
+            step.num === 1 ||
+            isCompleted ||
+            completedSteps.has(step.num - 1);
 
           const className = [
             "nav-item",
             isActive && "active",
             isCompleted && !isActive && "completed",
-            isDisabled && "disabled",
+            !isAccessible && "disabled",
           ]
             .filter(Boolean)
             .join(" ");
 
-          if (isDisabled) {
+          if (!isAccessible) {
             return (
-              <div key={step.num} className={className}>
+              <div
+                key={step.num}
+                className={className}
+                onClick={() =>
+                  showToast("Step 1 の情報を入力してください")
+                }
+              >
                 <span className="nav-num">{step.num}</span>
                 <span className="nav-label">{step.label}</span>
               </div>
@@ -66,6 +78,8 @@ export default function Sidebar() {
           );
         })}
       </div>
+
+      {toast && <div className="toast">{toast}</div>}
     </nav>
   );
 }
