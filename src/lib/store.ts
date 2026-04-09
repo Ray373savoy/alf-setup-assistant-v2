@@ -98,7 +98,10 @@ export const useAppStore = create<AppState>((set) => ({
     set((s) => ({ systemSelection: { ...s.systemSelection, ...sel } })),
 
   setAnalysisResult: (result) =>
-    set({ analysisResult: result, qaAnswers: result.qaItems }),
+    set({
+      analysisResult: result,
+      qaAnswers: result.qaItems.map((q) => ({ ...q, answer: q.answer ?? "" })),
+    }),
   updateQAAnswer: (id, answer) =>
     set((s) => ({
       qaAnswers: s.qaAnswers.map((q) => (q.id === id ? { ...q, answer } : q)),
