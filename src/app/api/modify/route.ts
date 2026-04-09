@@ -41,7 +41,7 @@ ${feedback}
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 8000,
+      max_tokens: 16000,
       system: systemPrompt,
       messages: [
         ...historyMessages,
@@ -62,7 +62,16 @@ ${feedback}
       );
     }
 
-    const updatedTaskJson: TaskJson = JSON.parse(jsonMatch[0]);
+    let updatedTaskJson: TaskJson;
+    try {
+      updatedTaskJson = JSON.parse(jsonMatch[0]);
+    } catch {
+      const isTruncated = response.stop_reason === "max_tokens";
+      const detail = isTruncated
+        ? "修正後のJSONが長すぎて途中で切れました。再試行してください。"
+        : "修正後のJSON解析に失敗しました。再試行してください。";
+      return NextResponse.json({ error: detail }, { status: 500 });
+    }
 
     const assistantMessage =
       `修正しました。${feedback.slice(0, 40)}${feedback.length > 40 ? "..." : ""}`;
