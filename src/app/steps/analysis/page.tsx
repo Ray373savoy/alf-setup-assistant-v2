@@ -145,15 +145,53 @@ export default function AnalysisPage() {
                             {opt}
                           </button>
                         ))}
+                        {q.required && (
+                          <button
+                            onClick={() => updateQAAnswer(q.id, t.analysis.needsConfirmationMarker)}
+                            style={{
+                              padding: "5px 12px",
+                              borderRadius: 20,
+                              fontSize: 12,
+                              cursor: "pointer",
+                              border: `1px solid ${q.answer === t.analysis.needsConfirmationMarker ? "#f59e0b" : "rgba(245,158,11,0.4)"}`,
+                              background: q.answer === t.analysis.needsConfirmationMarker ? "rgba(245,158,11,0.1)" : "transparent",
+                              color: q.answer === t.analysis.needsConfirmationMarker ? "#b45309" : "#92400e",
+                              transition: "all 0.15s",
+                            }}
+                          >
+                            ⚠ {t.analysis.needsConfirmation}
+                          </button>
+                        )}
                       </div>
                     ) : (
-                      <textarea
-                        className="form-textarea"
-                        value={q.answer}
-                        onChange={(e) => updateQAAnswer(q.id, e.target.value)}
-                        style={{ minHeight: 70 }}
-                        placeholder={q.required ? t.analysis.answerPlaceholder : t.analysis.optionalPlaceholder}
-                      />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        <textarea
+                          className="form-textarea"
+                          value={q.answer === t.analysis.needsConfirmationMarker ? "" : q.answer}
+                          onChange={(e) => updateQAAnswer(q.id, e.target.value)}
+                          style={{ minHeight: 70 }}
+                          placeholder={q.required ? t.analysis.answerPlaceholder : t.analysis.optionalPlaceholder}
+                          disabled={q.answer === t.analysis.needsConfirmationMarker}
+                        />
+                        {q.required && (
+                          <button
+                            onClick={() => updateQAAnswer(q.id, q.answer === t.analysis.needsConfirmationMarker ? "" : t.analysis.needsConfirmationMarker)}
+                            style={{
+                              alignSelf: "flex-start",
+                              padding: "4px 12px",
+                              borderRadius: 16,
+                              fontSize: 11,
+                              cursor: "pointer",
+                              border: `1px solid ${q.answer === t.analysis.needsConfirmationMarker ? "#f59e0b" : "rgba(245,158,11,0.4)"}`,
+                              background: q.answer === t.analysis.needsConfirmationMarker ? "rgba(245,158,11,0.1)" : "transparent",
+                              color: q.answer === t.analysis.needsConfirmationMarker ? "#b45309" : "#92400e",
+                              transition: "all 0.15s",
+                            }}
+                          >
+                            ⚠ {t.analysis.needsConfirmation}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}

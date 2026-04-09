@@ -58,6 +58,8 @@ export const ko: Translations = {
     requiredCount: "문항 / 선택",
     answerPlaceholder: "답변을 입력해 주세요",
     optionalPlaceholder: "생략 가능합니다",
+    needsConfirmation: "확인 필요",
+    needsConfirmationMarker: "【확인 필요】",
     nextButton: "답변하고 플로우 생성",
   },
 
@@ -143,5 +145,7 @@ export const ko: Translations = {
     downloaded: "✓ 다운로드했습니다. Channel Talk 관리 화면에서 임포트해 주세요.",
     downloadButton: "JSON 다운로드",
     stepLabel: "Step 6 / 6",
+    pendingConfirmation: "확인 필요 사항",
+    pendingConfirmationNote: "아래 항목은 '확인 필요'로 표시되었습니다. 태스크 임포트 전에 고객에게 확인해 주세요.",
   },
 };

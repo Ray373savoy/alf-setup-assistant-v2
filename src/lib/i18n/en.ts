@@ -58,6 +58,8 @@ export const en: Translations = {
     requiredCount: "questions / optional",
     answerPlaceholder: "Enter your answer",
     optionalPlaceholder: "Can be skipped",
+    needsConfirmation: "TBC",
+    needsConfirmationMarker: "[TBC]",
     nextButton: "Submit & Generate Flow",
   },
 
@@ -143,5 +145,7 @@ export const en: Translations = {
     downloaded: "✓ Downloaded. Please import from the Channel Talk admin panel.",
     downloadButton: "Download JSON",
     stepLabel: "Step 6 / 6",
+    pendingConfirmation: "Pending Confirmation",
+    pendingConfirmationNote: "The following items are marked as 'TBC'. Please confirm with the client before importing the task.",
   },
 };
