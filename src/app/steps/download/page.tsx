@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 
 export default function DownloadPage() {
   const router = useRouter();
+  const t = useT();
   const { taskJson, reset } = useAppStore();
   const [taskName, setTaskName] = useState(taskJson?.task?.name ?? "");
   const [downloaded, setDownloaded] = useState(false);
@@ -13,11 +15,11 @@ export default function DownloadPage() {
   if (!taskJson) {
     return (
       <div className="page-body">
-        <div className="page-header"><h2>ダウンロード</h2></div>
+        <div className="page-header"><h2>{t.download.heading}</h2></div>
         <div className="card">
-          <p style={{ color: "var(--text-secondary)" }}>Task JSONがありません。Step 1から始めてください。</p>
+          <p style={{ color: "var(--text-secondary)" }}>{t.download.noJson}</p>
           <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => router.push("/steps/input")}>
-            最初から始める
+            {t.download.startOver}
           </button>
         </div>
       </div>
@@ -52,8 +54,8 @@ export default function DownloadPage() {
     <>
       <div className="page-body">
         <div className="page-header">
-          <h2>ダウンロード</h2>
-          <p>Task JSON を確認してダウンロードしてください。Channel Talk管理画面からインポートできます。</p>
+          <h2>{t.download.heading}</h2>
+          <p>{t.download.description}</p>
         </div>
 
         {/* Task名 */}
@@ -62,17 +64,17 @@ export default function DownloadPage() {
             <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
               <path d="M3 4h10M3 8h6M3 12h4" stroke="#6c5ce7" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
-            タスク名の確認・変更
+            {t.download.taskNameSection}
           </div>
-          <label className="form-label">タスク名（50文字以内）</label>
+          <label className="form-label">{t.download.taskNameLabel}</label>
           <input
             className="form-input"
             value={taskName}
             onChange={(e) => setTaskName(e.target.value.slice(0, 50))}
-            placeholder="タスク名を入力"
+            placeholder={t.download.taskNamePlaceholder}
           />
           <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 5 }}>
-            {taskName.length} / 50文字
+            {taskName.length} {t.download.charCount}
           </div>
         </div>
 
@@ -83,13 +85,13 @@ export default function DownloadPage() {
               <rect x="2" y="2" width="12" height="12" rx="2" stroke="#6c5ce7" strokeWidth="1.5" />
               <path d="M5 8l2 2 4-4" stroke="#6c5ce7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            生成サマリー
+            {t.download.summary}
           </div>
 
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
             <div style={statCardStyle}>
               <div style={statNumStyle}>{nodeCount}</div>
-              <div style={statLabelStyle}>ノード数</div>
+              <div style={statLabelStyle}>{t.download.nodeCount}</div>
             </div>
             {Object.entries(nodeTypeCounts).map(([type, count]) => (
               <div key={type} style={statCardStyle}>
@@ -99,7 +101,7 @@ export default function DownloadPage() {
             ))}
             <div style={statCardStyle}>
               <div style={statNumStyle}>{taskJson.task.memorySchema?.length ?? 0}</div>
-              <div style={statLabelStyle}>メモリ変数</div>
+              <div style={statLabelStyle}>{t.download.memoryVars}</div>
             </div>
           </div>
         </div>
@@ -107,9 +109,9 @@ export default function DownloadPage() {
         {/* プレビュー */}
         <div className="card">
           <div className="card-title" style={{ marginBottom: 10 }}>
-            JSON プレビュー
+            {t.download.jsonPreview}
             <span style={{ fontSize: 11, fontWeight: 400, color: "var(--text-muted)", marginLeft: "auto" }}>
-              {JSON.stringify(finalJson).length.toLocaleString()} 文字
+              {JSON.stringify(finalJson).length.toLocaleString()} {t.download.chars}
             </span>
           </div>
           <pre style={{
@@ -118,18 +120,18 @@ export default function DownloadPage() {
             borderRadius: 8, margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all",
           }}>
             {JSON.stringify(finalJson, null, 2).slice(0, 2000)}
-            {JSON.stringify(finalJson).length > 2000 ? "\n... (省略)" : ""}
+            {JSON.stringify(finalJson).length > 2000 ? `\n${t.download.truncated}` : ""}
           </pre>
         </div>
 
         {/* インポート手順 */}
         <div className="card" style={{ background: "rgba(108,92,231,0.03)", borderColor: "rgba(108,92,231,0.15)" }}>
-          <div className="card-title">インポート手順</div>
+          <div className="card-title">{t.download.importSteps}</div>
           <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: "var(--text-secondary)", lineHeight: 2 }}>
-            <li>Channel Talk 管理画面 → <strong>自動化 → ALF</strong> を開く</li>
-            <li><strong>タスク</strong> タブ → <strong>タスクをインポート</strong> をクリック</li>
-            <li>ダウンロードした JSON ファイルを選択してインポート</li>
-            <li>インポート後、タスクの動作確認を行う</li>
+            <li>{t.download.importStep1}</li>
+            <li>{t.download.importStep2}</li>
+            <li>{t.download.importStep3}</li>
+            <li>{t.download.importStep4}</li>
           </ol>
         </div>
 
@@ -139,7 +141,7 @@ export default function DownloadPage() {
             border: "0.5px solid rgba(16,185,129,0.3)", borderRadius: 8,
             fontSize: 13, color: "#065f46", marginBottom: 16,
           }}>
-            ✓ ダウンロードしました。Channel Talk管理画面からインポートしてください。
+            {t.download.downloaded}
           </div>
         )}
       </div>
@@ -151,21 +153,21 @@ export default function DownloadPage() {
               <div key={n} className={`step-dot ${n === 6 ? "active" : "done"}`} />
             ))}
           </div>
-          <span className="step-label">Step 6 / 6</span>
+          <span className="step-label">{t.download.stepLabel}</span>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button className="btn btn-secondary" onClick={() => router.push("/steps/editor")}>
-            ← 戻る
+            {t.common.back}
           </button>
           <button className="btn btn-secondary" onClick={() => { reset(); router.push("/steps/input"); }}>
-            最初から始める
+            {t.download.startOver}
           </button>
           <button className="btn btn-primary" onClick={handleDownload}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
               <path d="M8 3v7M5 8l3 3 3-3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               <path d="M3 13h10" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
-            JSON をダウンロード
+            {t.download.downloadButton}
           </button>
         </div>
       </div>

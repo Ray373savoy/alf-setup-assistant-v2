@@ -122,7 +122,6 @@ export default function InputPage() {
                 <option value="">{t.input.noSelection}</option>
                 <option value="shopify">Shopify</option>
                 <option value="futureshop">futureshop</option>
-                <option value="crossmall">CROSS MALL</option>
                 <option value="other">{t.input.other}</option>
               </select>
             </div>
@@ -143,9 +142,9 @@ export default function InputPage() {
                 onChange={(e) => setSystemSelection({ wms: e.target.value as WmsSystem })}
               >
                 <option value="">{t.input.noSelection}</option>
-                <option value="logiless">ロジレス</option>
-                <option value="openlogi">OpenLogi</option>
-                <option value="crobo">Commerce Robotics</option>
+                <option value="logiless">LOGILESS</option>
+                <option value="openlogi">オープンロジ</option>
+                <option value="crobo">コマースロボティクス</option>
                 <option value="other">{t.input.other}</option>
               </select>
             </div>
@@ -166,7 +165,8 @@ export default function InputPage() {
                 onChange={(e) => setSystemSelection({ oms: e.target.value as OmsSystem })}
               >
                 <option value="">{t.input.noSelection}</option>
-                <option value="nextengine">Next Engine</option>
+                <option value="nextengine">ネクストエンジン</option>
+                <option value="crossmall">CROSS MALL</option>
                 <option value="other">{t.input.other}</option>
               </select>
             </div>
