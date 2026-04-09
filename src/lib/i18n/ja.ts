@@ -58,6 +58,8 @@ export const ja: Translations = {
     requiredCount: "問 / 任意",
     answerPlaceholder: "回答を入力してください",
     optionalPlaceholder: "省略可能です",
+    needsConfirmation: "要確認",
+    needsConfirmationMarker: "【要確認】",
     nextButton: "回答してフローを生成",
   },
 
@@ -143,5 +145,7 @@ export const ja: Translations = {
     downloaded: "✓ ダウンロードしました。Channel Talk管理画面からインポートしてください。",
     downloadButton: "JSON をダウンロード",
     stepLabel: "Step 6 / 6",
+    pendingConfirmation: "要確認事項",
+    pendingConfirmationNote: "以下の項目は「要確認」としてマークされています。タスクインポート前にクライアントへ確認してください。",
   },
 };

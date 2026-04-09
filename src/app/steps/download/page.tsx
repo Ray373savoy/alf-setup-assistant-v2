@@ -8,7 +8,7 @@ import { useT } from "@/lib/i18n";
 export default function DownloadPage() {
   const router = useRouter();
   const t = useT();
-  const { taskJson, reset } = useAppStore();
+  const { taskJson, qaAnswers, reset } = useAppStore();
   const [taskName, setTaskName] = useState(taskJson?.task?.name ?? "");
   const [downloaded, setDownloaded] = useState(false);
 
@@ -123,6 +123,35 @@ export default function DownloadPage() {
             {JSON.stringify(finalJson).length > 2000 ? `\n${t.download.truncated}` : ""}
           </pre>
         </div>
+
+        {/* 要確認事項リマインダー */}
+        {qaAnswers.some((q) => q.answer === t.analysis.needsConfirmationMarker) && (
+          <div className="card" style={{ background: "rgba(245,158,11,0.05)", borderColor: "rgba(245,158,11,0.3)" }}>
+            <div className="card-title" style={{ color: "#92400e" }}>
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1L1 14h14L8 1z" stroke="#f59e0b" strokeWidth="1.5" strokeLinejoin="round" />
+                <path d="M8 6v4M8 11.5v.5" stroke="#f59e0b" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              {t.download.pendingConfirmation}
+            </div>
+            <p style={{ fontSize: 12, color: "#92400e", margin: "0 0 10px 0" }}>
+              {t.download.pendingConfirmationNote}
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {qaAnswers
+                .filter((q) => q.answer === t.analysis.needsConfirmationMarker)
+                .map((q) => (
+                  <div key={q.id} style={{
+                    padding: "8px 12px", borderRadius: 8,
+                    background: "rgba(245,158,11,0.08)", border: "0.5px solid rgba(245,158,11,0.2)",
+                    fontSize: 12, color: "#78350f", lineHeight: 1.6,
+                  }}>
+                    <span style={{ fontWeight: 600 }}>Q: </span>{q.question}
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
 
         {/* インポート手順 */}
         <div className="card" style={{ background: "rgba(108,92,231,0.03)", borderColor: "rgba(108,92,231,0.15)" }}>

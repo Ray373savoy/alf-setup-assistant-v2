@@ -63,6 +63,8 @@ export interface Translations {
     requiredCount: string;
     answerPlaceholder: string;
     optionalPlaceholder: string;
+    needsConfirmation: string;
+    needsConfirmationMarker: string;
     nextButton: string;
   };
 
@@ -141,5 +143,7 @@ export interface Translations {
     downloaded: string;
     downloadButton: string;
     stepLabel: string;
+    pendingConfirmation: string;
+    pendingConfirmationNote: string;
   };
 }
