@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildGenerationPrompt } from "@/lib/prompt-loader";
+import { callWithRetry, friendlyMessage } from "@/lib/api-retry";
 import type { SystemSelection, QAItem, TaskJson } from "@/lib/types";
 
 export const maxDuration = 60;
@@ -44,21 +45,25 @@ ${feedbackSection}
     let text = "";
     let stopReason: string | null = null;
 
-    const stream = client.messages.stream({
-      model: "claude-sonnet-4-6",
-      max_tokens: 32000,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
-    });
+    await callWithRetry(async () => {
+      text = "";
+      stopReason = null;
+      const stream = client.messages.stream({
+        model: "claude-sonnet-4-6",
+        max_tokens: 32000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
+      });
 
-    for await (const event of stream) {
-      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-        text += event.delta.text;
+      for await (const event of stream) {
+        if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+          text += event.delta.text;
+        }
+        if (event.type === "message_stop") {
+          stopReason = (await stream.finalMessage()).stop_reason;
+        }
       }
-      if (event.type === "message_stop") {
-        stopReason = (await stream.finalMessage()).stop_reason;
-      }
-    }
+    });
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
@@ -81,8 +86,7 @@ ${feedbackSection}
 
     return NextResponse.json({ taskJson, mermaidCode });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: friendlyMessage(error) }, { status: 500 });
   }
 }
 
