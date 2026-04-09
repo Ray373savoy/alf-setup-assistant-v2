@@ -87,7 +87,7 @@ export default function InputPage() {
         </div>
 
         {/* 利用システム選択 */}
-        <div className="card">
+        <div className="card" style={{ maxWidth: 480 }}>
           <div className="card-title">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <rect x="2" y="2" width="5" height="5" rx="1" stroke="#6c5ce7" strokeWidth="1.5" />
