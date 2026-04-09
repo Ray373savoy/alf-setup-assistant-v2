@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { buildGenerationPrompt } from "@/lib/prompt-loader";
 import type { SystemSelection, TaskJson, ChatMessage } from "@/lib/types";
 
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
