@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 import BottomBar from "@/components/layout/BottomBar";
 import type { AnalysisResult } from "@/lib/types";
 
 export default function AnalysisPage() {
   const router = useRouter();
+  const t = useT();
   const {
     inputText, systemSelection,
     analysisResult, setAnalysisResult,
@@ -37,7 +39,7 @@ export default function AnalysisPage() {
       if (!res.ok) throw new Error((data as unknown as { error: string }).error);
       setAnalysisResult(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "分析に失敗しました");
+      setError(e instanceof Error ? e.message : t.common.error);
     } finally {
       setLoading(false);
     }
@@ -55,16 +57,16 @@ export default function AnalysisPage() {
     <>
       <div className="page-body">
         <div className="page-header">
-          <h2>AI分析・要件補完</h2>
-          <p>AIがフローを分析中です。要件を補完するためにいくつか確認させてください。</p>
+          <h2>{t.analysis.heading}</h2>
+          <p>{t.analysis.description}</p>
         </div>
 
         {loading && (
           <div className="card" style={{ textAlign: "center", padding: 40 }}>
             <div className="spinner" style={{ width: 32, height: 32, margin: "0 auto 16px" }} />
-            <p style={{ fontWeight: 600, marginBottom: 4 }}>入力を分析しています...</p>
+            <p style={{ fontWeight: 600, marginBottom: 4 }}>{t.analysis.analyzing}</p>
             <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
-              フローを解析してQ&Aを生成しています（通常10〜20秒）
+              {t.analysis.analyzingDetail}
             </p>
           </div>
         )}
@@ -77,7 +79,7 @@ export default function AnalysisPage() {
               onClick={runAnalysis}
               style={{ marginTop: 10 }}
             >
-              再試行
+              {t.common.retry}
             </button>
           </div>
         )}
@@ -104,9 +106,9 @@ export default function AnalysisPage() {
             {/* Q&A */}
             <div className="card">
               <div className="card-title">
-                要件確認
+                {t.analysis.requirementsCheck}
                 <span style={{ fontSize: 11, fontWeight: 400, color: "var(--text-muted)", marginLeft: "auto" }}>
-                  必須 {qaAnswers.filter((q) => q.required).length}問 / 任意 {qaAnswers.filter((q) => !q.required).length}問
+                  {t.common.required} {qaAnswers.filter((q) => q.required).length}{t.analysis.requiredCount} {qaAnswers.filter((q) => !q.required).length}問
                 </span>
               </div>
 
@@ -115,7 +117,7 @@ export default function AnalysisPage() {
                   <div key={q.id} style={{ borderLeft: `2px solid ${q.required ? "#6c5ce7" : "var(--border)"}`, paddingLeft: 14 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
                       <span className={`badge ${q.required ? "badge-required" : "badge-optional"}`}>
-                        {q.required ? "必須" : "任意"}
+                        {q.required ? t.common.required : t.common.optional}
                       </span>
                       <span style={{ fontSize: 13, fontWeight: 500 }}>{q.question}</span>
                     </div>
@@ -150,7 +152,7 @@ export default function AnalysisPage() {
                         value={q.answer}
                         onChange={(e) => updateQAAnswer(q.id, e.target.value)}
                         style={{ minHeight: 70 }}
-                        placeholder={q.required ? "回答を入力してください" : "省略可能です"}
+                        placeholder={q.required ? t.analysis.answerPlaceholder : t.analysis.optionalPlaceholder}
                       />
                     )}
                   </div>
@@ -164,7 +166,7 @@ export default function AnalysisPage() {
       <BottomBar
         currentStep={2}
         onNext={handleNext}
-        nextLabel="回答してフローを生成"
+        nextLabel={t.analysis.nextButton}
         nextDisabled={!canProceed || loading || !!error}
         onBack={() => router.push("/steps/input")}
       />

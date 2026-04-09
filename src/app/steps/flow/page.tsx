@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 import type { ChatMessage } from "@/lib/types";
 
 export default function FlowPage() {
   const router = useRouter();
+  const t = useT();
   const {
     inputText, systemSelection, qaAnswers,
     taskJson, setTaskJson,
@@ -48,7 +50,7 @@ export default function FlowPage() {
       setMermaidCode(data.mermaidCode);
       renderMermaid(data.mermaidCode);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "生成に失敗しました");
+      setError(e instanceof Error ? e.message : String(e));
     } finally {
       setGenerating(false);
     }
@@ -79,23 +81,19 @@ export default function FlowPage() {
       await generateFlow(feedback);
       const aiMsg: ChatMessage = {
         role: "assistant",
-        content: "フローを修正しました。左のMermaid図をご確認ください。",
+        content: t.flow.modifySuccess,
         timestamp: Date.now(),
       };
       addChatMessage(aiMsg);
     } catch {
-      const aiMsg: ChatMessage = { role: "assistant", content: "修正に失敗しました。もう一度お試しください。", timestamp: Date.now() };
+      const aiMsg: ChatMessage = { role: "assistant", content: t.flow.modifyFail, timestamp: Date.now() };
       addChatMessage(aiMsg);
     } finally {
       setSending(false);
     }
   }
 
-  const SUGGESTIONS = [
-    "注文番号を2回まで再入力できるようにしたい",
-    "ゲスト対応を追加したい",
-    "エラーメッセージの文言を変えたい",
-  ];
+  const SUGGESTIONS = t.flow.suggestions;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
@@ -106,14 +104,14 @@ export default function FlowPage() {
         flexShrink: 0,
       }}>
         <div style={{ fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 7 }}>
-          Step 3 — フロー可視化
+          {t.flow.heading}
         </div>
         <div style={{ display: "flex", gap: 7 }}>
           <button className="btn btn-secondary" style={{ fontSize: 11, padding: "5px 12px" }}
-            onClick={() => router.push("/steps/analysis")}>← 戻る</button>
+            onClick={() => router.push("/steps/analysis")}>{t.common.back}</button>
           <button className="btn btn-secondary" style={{ fontSize: 11, padding: "5px 12px" }}
             onClick={() => generateFlow()} disabled={generating}>
-            {generating ? "生成中..." : "再生成"}
+            {generating ? t.flow.generating : t.flow.regenerate}
           </button>
         </div>
       </div>
@@ -123,13 +121,13 @@ export default function FlowPage() {
         {/* Left: Mermaid */}
         <div style={{ flex: 6, borderRight: "1px solid var(--border)", padding: 16, overflow: "auto", background: "#f8f9fb", position: "relative" }}>
           <div style={{ position: "absolute", top: 8, left: 8, fontSize: 10, background: "rgba(29,158,117,0.1)", color: "#0F6E56", border: "0.5px solid rgba(29,158,117,0.3)", padding: "2px 7px", borderRadius: 4 }}>
-            Mermaid プレビュー
+            {t.flow.mermaidPreview}
           </div>
 
           {generating && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 12 }}>
               <div className="spinner" style={{ width: 28, height: 28 }} />
-              <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>Task JSON生成中...</p>
+              <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>{t.flow.generatingJson}</p>
             </div>
           )}
 
@@ -145,7 +143,7 @@ export default function FlowPage() {
 
           {!generating && !mermaidCode && !error && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-muted)", fontSize: 13 }}>
-              フローを生成してください
+              {t.flow.generatePrompt}
             </div>
           )}
         </div>
@@ -153,7 +151,7 @@ export default function FlowPage() {
         {/* Right: Chat */}
         <div style={{ flex: 4, display: "flex", flexDirection: "column", background: "var(--card-bg)" }}>
           <div style={{ padding: "10px 14px", borderBottom: "1px solid var(--border)", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>
-            フロー修正チャット
+            {t.flow.chatTitle}
           </div>
 
           <div style={{ flex: 1, overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
@@ -163,8 +161,7 @@ export default function FlowPage() {
                 background: "var(--bg)", borderRadius: 8, padding: "10px 12px",
                 borderLeft: "2px solid #6c5ce7",
               }}>
-                フローを生成しました。このフローでよければ下の「検証へ進む」を押してください。
-                修正したい部分があれば自然言語で教えてください。
+                {t.flow.chatInitial}
               </div>
             )}
             {chatHistory.map((msg, i) => (
@@ -180,7 +177,7 @@ export default function FlowPage() {
             ))}
             {sending && (
               <div style={{ fontSize: 12, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 6 }}>
-                <span className="spinner" style={{ width: 12, height: 12 }} /> 修正中...
+                <span className="spinner" style={{ width: 12, height: 12 }} /> {t.flow.modifying}
               </div>
             )}
             <div ref={chatEndRef} />
@@ -203,7 +200,7 @@ export default function FlowPage() {
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleChatSend(); } }}
-              placeholder="修正内容を自然言語で入力..."
+              placeholder={t.flow.chatPlaceholder}
               style={{
                 flex: 1, fontSize: 12, padding: "7px 10px", border: "1px solid var(--border)",
                 borderRadius: 6, background: "var(--bg)", resize: "none", height: 34,
@@ -228,14 +225,14 @@ export default function FlowPage() {
               <div key={n} className={`step-dot ${n === 3 ? "active" : n < 3 ? "done" : ""}`} />
             ))}
           </div>
-          <span className="step-label">Step 3 / 6</span>
+          <span className="step-label">{t.flow.stepLabel}</span>
         </div>
         <button
           className="btn btn-primary"
           disabled={!taskJson || generating}
           onClick={() => { completeStep(3); setCurrentStep(4); router.push("/steps/validation"); }}
         >
-          検証へ進む
+          {t.flow.nextButton}
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path d="M4 8h8M9 5l3 3-3 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

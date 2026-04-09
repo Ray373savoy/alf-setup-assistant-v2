@@ -3,20 +3,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 import type { ValidationResult } from "@/lib/types";
 
-const CHECKS = [
-  { key: "S01", label: "Task名の形式確認" },
-  { key: "S02", label: "トリガーの形式確認" },
-  { key: "S03", label: "ノード数・startNodeId確認" },
-  { key: "S10", label: "ノードID・keyの一意性確認" },
-  { key: "S11", label: "ノード間参照の整合性確認" },
-  { key: "S20", label: "前方向フロー（ループバック禁止）確認" },
-];
+const CHECK_KEYS = ["S01", "S02", "S03", "S10", "S11", "S20"];
 
 export default function ValidationPage() {
   const router = useRouter();
+  const t = useT();
   const { taskJson, validationResult, setValidationResult, completeStep, setCurrentStep } = useAppStore();
+
+  const CHECKS = CHECK_KEYS.map((key, i) => ({ key, label: t.validation.checks[i] }));
 
   const [runningIdx, setRunningIdx] = useState(-1);
   const [result, setResult] = useState<ValidationResult | null>(validationResult);
@@ -85,8 +82,8 @@ export default function ValidationPage() {
     <>
       <div className="page-body">
         <div className="page-header">
-          <h2>検証</h2>
-          <p>生成されたTask JSONをインポート前に自動検証します。</p>
+          <h2>{t.validation.heading}</h2>
+          <p>{t.validation.description}</p>
         </div>
 
         <div className="card">
@@ -94,7 +91,7 @@ export default function ValidationPage() {
             <div className="spinner" style={{ width: 14, height: 14, display: isRunning ? "block" : "none" }} />
             {result?.passed && "✓ "}
             {result && !result.passed && "✕ "}
-            検証チェック
+            {t.validation.checkTitle}
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -138,7 +135,7 @@ export default function ValidationPage() {
                 <circle cx="8" cy="8" r="6" stroke="#0F6E56" strokeWidth="1.3" />
                 <path d="M8 3v4l3 3" stroke="#0F6E56" strokeWidth="1.3" strokeLinecap="round" />
               </svg>
-              すべてのチェックが通過しました。2.5秒後に自動でStep 5へ進みます...
+              {t.validation.allPassed}
               <div style={{ flex: 1, height: 3, background: "rgba(16,185,129,0.15)", borderRadius: 2, overflow: "hidden" }}>
                 <div style={{
                   height: "100%", background: "#10b981", borderRadius: 2,
@@ -155,7 +152,7 @@ export default function ValidationPage() {
               border: "0.5px solid rgba(239,68,68,0.25)", borderRadius: 7,
             }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: "#dc2626", marginBottom: 6 }}>
-                エラー詳細
+                {t.validation.errorDetails}
               </div>
               {result.errors.map((e, i) => (
                 <div key={i} style={{ fontSize: 12, color: "#b91c1c", lineHeight: 1.8 }}>{e}</div>
@@ -166,11 +163,11 @@ export default function ValidationPage() {
               <div style={{ marginTop: 10, display: "flex", gap: 7 }}>
                 <button className="btn btn-secondary" style={{ fontSize: 12 }}
                   onClick={() => router.push("/steps/flow")}>
-                  ← Step 3で修正する
+                  {t.validation.goToStep3}
                 </button>
                 <button className="btn btn-secondary" style={{ fontSize: 12 }}
                   onClick={() => router.push("/steps/editor")}>
-                  Step 5で直接修正する →
+                  {t.validation.goToStep5}
                 </button>
               </div>
             </div>
@@ -180,7 +177,7 @@ export default function ValidationPage() {
         {/* Warnings（エラーなしの場合） */}
         {result?.passed && result.warnings.length > 0 && (
           <div className="card" style={{ borderColor: "rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.04)" }}>
-            <div className="card-title" style={{ color: "#92400e" }}>警告（インポートは可能）</div>
+            <div className="card-title" style={{ color: "#92400e" }}>{t.validation.warnings}</div>
             {result.warnings.map((w, i) => (
               <div key={i} style={{ fontSize: 12, color: "#92400e", lineHeight: 1.8 }}>⚠ {w}</div>
             ))}
@@ -197,10 +194,10 @@ export default function ValidationPage() {
               <div key={n} className={`step-dot ${n === 4 ? "active" : n < 4 ? "done" : ""}`} />
             ))}
           </div>
-          <span className="step-label">Step 4 / 6</span>
+          <span className="step-label">{t.validation.stepLabel}</span>
         </div>
         <button className="btn btn-secondary" onClick={() => router.push("/steps/flow")}>
-          ← 戻る
+          {t.common.back}
         </button>
       </div>
     </>
