@@ -112,6 +112,10 @@ export default function AnalysisPage() {
                 </span>
               </div>
 
+              <p style={{ fontSize: 11, color: "#92400e", background: "rgba(245,158,11,0.07)", padding: "7px 12px", borderRadius: 6, margin: "0 0 14px 0", lineHeight: 1.6 }}>
+                ⚠ {t.analysis.confirmLaterHint}
+              </p>
+
               <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 {qaAnswers.map((q) => (
                   <div key={q.id} style={{ borderLeft: `2px solid ${q.required ? "#6c5ce7" : "var(--border)"}`, paddingLeft: 14 }}>

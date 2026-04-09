@@ -58,8 +58,9 @@ export const ja: Translations = {
     requiredCount: "問 / 任意",
     answerPlaceholder: "回答を入力してください",
     optionalPlaceholder: "省略可能です",
-    needsConfirmation: "要確認",
-    needsConfirmationMarker: "【要確認】",
+    needsConfirmation: "後で確認する",
+    needsConfirmationMarker: "【後で確認】",
+    confirmLaterHint: "必須項目の回答がわからない場合は「後で確認する」を選択して先に進むことができます。",
     nextButton: "回答してフローを生成",
   },
 
