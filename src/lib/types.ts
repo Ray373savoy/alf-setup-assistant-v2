@@ -2,9 +2,9 @@
 // 利用システム選択（Step 1）
 // ============================================================
 
-export type CartSystem = "shopify" | "futureshop" | "crossmall" | "other" | "";
+export type CartSystem = "shopify" | "futureshop" | "other" | "";
 export type WmsSystem = "logiless" | "openlogi" | "crobo" | "other" | "";
-export type OmsSystem = "nextengine" | "other" | "";
+export type OmsSystem = "nextengine" | "crossmall" | "other" | "";
 
 export interface SystemSelection {
   cart: CartSystem;
