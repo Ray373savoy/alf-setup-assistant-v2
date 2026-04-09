@@ -3,6 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { buildAnalysisPrompt } from "@/lib/prompt-loader";
 import type { SystemSelection, AnalysisResult } from "@/lib/types";
 
+export const maxDuration = 60;
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(request: Request) {

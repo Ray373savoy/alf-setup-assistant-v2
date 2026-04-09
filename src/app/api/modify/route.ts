@@ -3,6 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { buildGenerationPrompt } from "@/lib/prompt-loader";
 import type { SystemSelection, TaskJson, ChatMessage } from "@/lib/types";
 
+export const maxDuration = 120;
+
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(request: Request) {
@@ -41,7 +43,7 @@ ${feedback}
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 16000,
+      max_tokens: 32000,
       system: systemPrompt,
       messages: [
         ...historyMessages,
