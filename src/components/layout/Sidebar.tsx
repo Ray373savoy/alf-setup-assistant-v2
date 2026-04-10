@@ -6,6 +6,15 @@ import { useCallback, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { useT, useI18nStore, type Locale } from "@/lib/i18n";
+import {
+  FileText,
+  BrainCircuit,
+  GitBranch,
+  ShieldCheck,
+  PenTool,
+  Download,
+  CheckCircle,
+} from "lucide-react";
 
 const STEP_PATHS = [
   "/steps/input",
@@ -16,9 +25,11 @@ const STEP_PATHS = [
   "/steps/download",
 ];
 
+const STEP_ICONS = [FileText, BrainCircuit, GitBranch, ShieldCheck, PenTool, Download];
+
 const LOCALES: { value: Locale; label: string }[] = [
-  { value: "ja", label: "JP" },
-  { value: "ko", label: "KR" },
+  { value: "ja", label: "JA" },
+  { value: "ko", label: "KO" },
   { value: "en", label: "EN" },
 ];
 
@@ -37,27 +48,26 @@ export default function Sidebar() {
 
   return (
     <nav className="sidebar">
-      <div className="lang-selector">
-        {LOCALES.map((l) => (
-          <button
-            key={l.value}
-            className={`lang-btn ${locale === l.value ? "active" : ""}`}
-            onClick={() => setLocale(l.value)}
-          >
-            {l.label}
-          </button>
-        ))}
+      <div className="sidebar-logo">
+        <Image src="/logo.png" alt="Channel Talk" width={36} height={36} />
+        <h1>
+          {t.sidebar.title.split("\n").map((line, i) => (
+            <span key={i}>{line}{i === 0 && <br />}</span>
+          ))}
+        </h1>
       </div>
 
-      <div className="sidebar-logo">
-        <Image src="/logo.svg" alt="Channel Talk" width={36} height={36} />
-        <div>
-          <div className="sidebar-logo-text">
-            {t.sidebar.title.split("\n").map((line, i) => (
-              <span key={i}>{line}{i === 0 && <br />}</span>
-            ))}
-          </div>
-          <div className="sidebar-logo-sub">{t.sidebar.subtitle}</div>
+      <div className="lang-switcher">
+        <div className="lang-switcher-inner">
+          {LOCALES.map((l) => (
+            <button
+              key={l.value}
+              className={`lang-btn ${locale === l.value ? "active" : ""}`}
+              onClick={() => setLocale(l.value)}
+            >
+              {l.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -68,6 +78,7 @@ export default function Sidebar() {
           const isCompleted = completedSteps.has(num);
           const isAccessible =
             num === 1 || isCompleted || completedSteps.has(num - 1);
+          const Icon = STEP_ICONS[i];
 
           const className = [
             "nav-item",
@@ -86,6 +97,7 @@ export default function Sidebar() {
                 onClick={() => showToast(t.sidebar.stepIncomplete)}
               >
                 <span className="nav-num">{num}</span>
+                <Icon className="nav-item-icon" />
                 <span className="nav-label">{t.sidebar.steps[i]}</span>
               </div>
             );
@@ -94,8 +106,9 @@ export default function Sidebar() {
           return (
             <Link key={num} href={path} className={className}>
               <span className="nav-num">
-                {isCompleted && !isActive ? "✓" : num}
+                {isCompleted && !isActive ? <CheckCircle size={14} /> : num}
               </span>
+              <Icon className="nav-item-icon" />
               <span className="nav-label">{t.sidebar.steps[i]}</span>
             </Link>
           );
