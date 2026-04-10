@@ -49,7 +49,7 @@ export default function Sidebar() {
   return (
     <nav className="sidebar">
       <div className="sidebar-logo">
-        <Image src="/logo.png" alt="Channel Talk" width={36} height={36} />
+        <Image src="/logo.png" alt="Channel Talk" width={36} height={36} style={{ height: "auto" }} />
         <h1>
           {t.sidebar.title.split("\n").map((line, i) => (
             <span key={i}>{line}{i === 0 && <br />}</span>

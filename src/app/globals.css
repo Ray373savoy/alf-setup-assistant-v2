@@ -71,9 +71,10 @@ body {
 
 .sidebar-logo img {
   width: 36px;
-  height: 36px;
+  height: auto;
   border-radius: 10px;
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 .sidebar-logo h1 {
