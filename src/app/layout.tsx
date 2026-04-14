@@ -5,7 +5,7 @@ import SessionProvider from "@/components/auth/SessionProvider";
 import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "ALF設計アシスタント",
+  title: "チャネルトークタスクビルダー",
   description: "Channel Talk ALF Task設計を支援するWebアプリ",
 };
 

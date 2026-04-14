@@ -12,7 +12,7 @@ export const ja: Translations = {
   },
 
   sidebar: {
-    title: "ALF設計\nアシスタント",
+    title: "チャネルトーク\nタスクビルダー",
     subtitle: "Channel Talk",
     brand: "ALF",
     stepIncomplete: "Step 1 の情報を入力してください",
@@ -20,7 +20,7 @@ export const ja: Translations = {
   },
 
   login: {
-    title: "ALF 設計アシスタント",
+    title: "チャネルトークタスクビルダー",
     description: "Channel Talk ALF Task 設計を支援する Web アプリ",
     googleButton: "Google でログイン",
   },

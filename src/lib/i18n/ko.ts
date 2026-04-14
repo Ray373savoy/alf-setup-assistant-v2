@@ -12,7 +12,7 @@ export const ko: Translations = {
   },
 
   sidebar: {
-    title: "ALF 설계\n어시스턴트",
+    title: "채널톡\n태스크 빌더",
     subtitle: "Channel Talk",
     brand: "ALF",
     stepIncomplete: "Step 1의 정보를 입력해 주세요",
@@ -20,7 +20,7 @@ export const ko: Translations = {
   },
 
   login: {
-    title: "ALF 설계 어시스턴트",
+    title: "채널톡 태스크 빌더",
     description: "Channel Talk ALF Task 설계를 지원하는 웹 앱",
     googleButton: "Google로 로그인",
   },
