@@ -4,7 +4,7 @@ import { buildAnalysisPrompt } from "@/lib/prompt-loader";
 import { callWithRetry, friendlyMessage } from "@/lib/api-retry";
 import type { SystemSelection, AnalysisResult } from "@/lib/types";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
