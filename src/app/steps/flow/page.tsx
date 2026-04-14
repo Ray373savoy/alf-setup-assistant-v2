@@ -44,8 +44,13 @@ export default function FlowPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inputText, systemSelection, qaAnswers, chatFeedback: feedback }),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        let msg: string;
+        try { msg = JSON.parse(text).error; } catch { msg = res.status === 504 ? "サーバーがタイムアウトしました。入力を短くするか、再試行してください。" : text || `HTTP ${res.status}`; }
+        throw new Error(msg);
+      }
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
       setTaskJson(data.taskJson);
       setMermaidCode(data.mermaidCode);
       renderMermaid(data.mermaidCode);
