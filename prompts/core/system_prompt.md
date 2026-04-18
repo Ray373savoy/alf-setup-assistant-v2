@@ -28,7 +28,10 @@
 - `trigger`: string
   - Task開始の役割/トリガー条件ガイド、日本語（例：`"RID関連の問い合わせが来たらこのTaskを開始する。"`）
 - `filter`: object (Expression)
-  - key, type, operator, values を持つ **Leafノード** または and/or を持つ **Compositeノード**
+  - 🔴 **必ず `{ "and": [{ "or": [ Leafノード ] }] }` の構造で包むこと。LeafノードをExpressionの直下に置くと `Invalid ExpressiveQuery format` エラーが発生する。**
+  - ❌ 誤り（Leafを直置き）：`{ "key": "taskMemory.x", "type": "string", "operator": "$eq", "values": ["v"] }`
+  - ✅ 正しい（必ずand/orで包む）：`{ "and": [{ "or": [{ "key": "taskMemory.x", "type": "string", "operator": "$eq", "values": ["v"] }] }] }`
+  - `task.filter` にトリガー条件が不要な場合は `{ "and": [] }` を使用すること。
   - `type`: `"string" | "number" | "boolean" | "date" | "datetime" | "list" | "listOfNumber"`
   - `operator` 例：`"$eq"`, `"$ne"`, `"$gt"`, `"$lt"`, `"$containsAny"`, `"$containsAll"`, `"$in"` 等
 - `targetMediums`: array of { `mediumType`: `"native"` }
@@ -104,6 +107,9 @@
   - `id`: `"node-X"` または `"TRIGGER"`
   - `position`: { `x`: number, `y`: number }
     }
+  - 🔴 **`position` オブジェクトで必ず包むこと。`{ id, x, y }` の旧形式は `Required` エラーになる。**
+  - ❌ 誤り：`{ "id": "node-1", "x": 500, "y": 0 }`
+  - ✅ 正しい：`{ "id": "node-1", "position": { "x": 500, "y": 0 } }`
 - `edgePositions`: array of {
   - `sourceNode`: { `id`: `"node-X"` または `"TRIGGER"`, `offset`: 0, `type`: `"goto" | "branch" | "button"`, `index`: number },
   - `targetNode`: { `id`: `"node-X"` または `"END_TASK"`, `offset`: 0 }
