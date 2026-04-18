@@ -56,7 +56,15 @@ Task終了時：
 
 ## filter構造
 
+🔴 **LeafノードをExpressionの直下に置くと `Invalid ExpressiveQuery format` エラーになる。必ず `and → or → Leaf` の構造で包むこと。**
+
 ```json
+// ❌ 誤り（LeafをExpression直下に置いている）
+{
+  "filter": { "key": "taskMemory.x", "type": "string", "operator": "$eq", "values": ["v"] }
+}
+
+// ✅ 正しい（必ずand/orで包む）
 {
   "filter": {
     "and": [
@@ -78,6 +86,7 @@ Task終了時：
 - `and`：すべての条件がtrueでなければならない
 - `or`：1つでもtrueであればよい
 - ネスト可能：`and`の中に複数の`or`、各`or`の中に複数の条件
+- `task.filter` にトリガー条件が不要な場合は `{ "and": [] }` を使用すること
 
 ## filterで使用可能なkey
 
